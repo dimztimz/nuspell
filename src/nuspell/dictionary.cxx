@@ -2651,10 +2651,9 @@ auto Dict_Base::phonetic_suggest(std::wstring& word, List_WStrings& out) const
 }
 
 // namespace {
-auto ngram_similarity(size_t n, wstring_view a, wstring_view b) -> ptrdiff_t
+auto ngram_similarity_low_level(size_t n, wstring_view a, wstring_view b)
+    -> ptrdiff_t
 {
-	if (b.empty())
-		return 0;
 	auto score = ptrdiff_t(0);
 	n = min(n, a.size());
 	for (size_t k = 1; k != n + 1; ++k) {
@@ -2666,6 +2665,18 @@ auto ngram_similarity(size_t n, wstring_view a, wstring_view b) -> ptrdiff_t
 			}
 		}
 	}
+	return score;
+}
+
+auto ngram_similarity_longer_worse(size_t n, wstring_view a, wstring_view b)
+    -> ptrdiff_t
+{
+	if (b.empty())
+		return 0;
+	auto score = ngram_similarity_low_level(n, a, b);
+	auto d = ptrdiff_t(b.size() - a.size()) - 2;
+	if (d > 0)
+		score -= d;
 	return score;
 }
 // } // namespace
