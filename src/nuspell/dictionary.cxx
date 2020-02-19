@@ -2650,6 +2650,26 @@ auto Dict_Base::phonetic_suggest(std::wstring& word, List_WStrings& out) const
 	word = backup;
 }
 
+// namespace {
+auto ngram_similarity(size_t n, wstring_view a, wstring_view b) -> ptrdiff_t
+{
+	if (b.empty())
+		return 0;
+	auto score = ptrdiff_t(0);
+	n = min(n, a.size());
+	for (size_t k = 1; k != n + 1; ++k) {
+		for (size_t i = 0; i != a.size() - k; ++i) {
+			auto kgram = a.substr(i, k);
+			auto find = b.find(kgram);
+			if (find != b.npos) {
+				++score;
+			}
+		}
+	}
+	return score;
+}
+// } // namespace
+
 Dictionary::Dictionary(std::istream& aff, std::istream& dic)
     : external_locale_known_utf8(true)
 {
