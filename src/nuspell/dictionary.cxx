@@ -2679,6 +2679,15 @@ auto ngram_similarity_longer_worse(size_t n, wstring_view a, wstring_view b)
 		score -= d;
 	return score;
 }
+auto left_common_substring_length(wstring_view a, wstring_view b) -> ptrdiff_t
+{
+	if (a.empty() || b.empty())
+		return 0;
+	if (a[0] != b[0] && a[0] != u_tolower(b[0]))
+		return 0;
+	auto it = std::mismatch(begin(a) + 1, end(a), begin(b) + 1, end(b));
+	return it.first - begin(a);
+}
 // } // namespace
 
 Dictionary::Dictionary(std::istream& aff, std::istream& dic)
